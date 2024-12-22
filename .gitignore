@@ -1,0 +1,6 @@
+img/
+simulation_report_files/
+test-usun/
+.vscode
+*.csl
+*.bib
