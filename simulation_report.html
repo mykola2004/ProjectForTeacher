@@ -132,7 +132,7 @@ window.Quarto = {
   <ul class="collapse">
   <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">1</span> Introduction</a></li>
   <li><a href="#model-description" id="toc-model-description" class="nav-link" data-scroll-target="#model-description"><span class="header-section-number">2</span> Model Description</a></li>
-  <li><a href="#bibliography" id="toc-bibliography" class="nav-link" data-scroll-target="#bibliography"><span class="header-section-number">3</span> Bibliography</a></li>
+  <li><a href="#bibliraphy" id="toc-bibliraphy" class="nav-link" data-scroll-target="#bibliraphy"><span class="header-section-number">3</span> Bibliraphy</a></li>
   </ul>
 </nav>
 </div>
@@ -187,32 +187,33 @@ window.Quarto = {
 <section id="model-description" class="level1" data-number="2">
 <h1 data-number="2"><span class="header-section-number">2</span> Model Description</h1>
 <ol type="1">
-<li><strong>Size of the tribe</strong>: The tribe starts with a fixed number <span class="math inline">\(N\)</span> of individuals in the initial generation. The number of women and men is the same, <span class="math inline">\(N\)</span> (it must be even) is determined by the user. The tribe is isolated from other tribes.</li>
+<li><strong>Size of the tribe</strong>: The tribe starts with a fixed even number <span class="math inline">\(N\)</span> of individuals in the initial generation. The number of women and men is the same, every is of legal age, but not older then 10 year from reaching legal age. The tribe is isolated from other tribes.</li>
 <li><strong>Human age</strong>: Women reach a random age consistent with a normal distribution <span class="math inline">\(\mathcal{N}(\mu_F, \sigma^2_F)\)</span>, similary men reach a random age consistent with a normal distribution <span class="math inline">\(\mathcal{N}(\mu_M, \sigma^2_M)\)</span>. The parameters <span class="math inline">\(\mu_F, \sigma^2_F, \mu_M, \sigma^2_M\)</span> are determined by the user.</li>
 <li><strong>Marriage</strong>: Women, upon reaching age <span class="math inline">\(t_F\)</span>, and men, upon reaching age <span class="math inline">\(t_M\)</span>, form lifelong pairs. Pairing is random. The parameters <span class="math inline">\(t_F\)</span> and <span class="math inline">\(t_M\)</span> are determined by the user.</li>
 <li><strong>Offspring</strong>:
 <ol type="1">
-<li><strong>Possibility</strong>: Each pair has the chance to have offspring during the period <span class="math inline">\(T_O\)</span>. The parameter <span class="math inline">\(T_O\)</span> is determined by the user.</li>
+<li><strong>Reproductive age</strong>: A woman can become pregnant up to age <span class="math inline">\(t_F\)</span>, and a man can father a child up to age <span class="math inline">\(t_M\)</span>. The parameters <span class="math inline">\(t_F\)</span> and <span class="math inline">\(t_M\)</span> are determined by the user.</li>
+<li><strong>Possibility</strong>: Each pair has the chance to have offspring during their reproductive years.</li>
 <li><strong>Number</strong>: The number of offspring is determined by a Poisson distribution with parameter <span class="math inline">\(\lambda\)</span>. The parameter <span class="math inline">\(\lambda\)</span> is determined by the user.</li>
-<li><strong>Birth</strong>: The moment of birth is random with uniform distribution in the period <span class="math inline">\([0, T_O]\)</span>.</li>
+<li><strong>Birth</strong>: The moment of birth for a married couple is random, with the additional assumption that the interval between births cannot be less than <span class="math inline">\(d_B\)</span>. The parameter <span class="math inline">\(d_B\)</span> is determined by the user.</li>
 </ol></li>
 <li><strong>Inbred</strong>:
 <ol type="1">
-<li><strong>Kinship</strong>: A pair is considered related if they have common ancestors up to the third generation.</li>
+<li><strong>Kinship</strong>: A pair is deemed to be related if they share a common ancestor within the past <span class="math inline">\(K_G​\)</span> generations. The parameter <span class="math inline">\(K_G\)</span> is determined by the user.</li>
 <li><strong>Genetic defect</strong>: A genetic defect will occur with a probability of <span class="math inline">\(p_D\)</span>​ when a child is born to related parents. A person with a genetic defect passes it on to their offspring with a probability of <span class="math inline">\(p_P\)</span>. The parameters <span class="math inline">\(p_D\)</span>, <span class="math inline">\(p_P\)</span> are determined by the user.</li>
 </ol></li>
 <li><strong>Time of simulation</strong>: The simulation time <span class="math inline">\(T\)</span> is defined by the user and must be long enough to encompass multiple generations.</li>
 <li><strong>We observe</strong>: The simulation is intended to determine the empirical distribution of the number of individuals with a genetic defect.</li>
 </ol>
 </section>
-<section id="bibliography" class="level1" data-number="3">
+<section id="bibliraphy" class="level1" data-number="3">
 
 <!-- -->
 
 
 </section>
 
-<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">3 Bibliography</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">3 Bibliraphy</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
 <div id="ref-23andMeInbreeding" class="csl-entry" role="listitem">
 23andMe. 2023. <span>“Inbreeding Doomed the Habsburgs, Study Finds.”</span> <a href="https://blog.23andme.com/articles/inbreeding-doomed-habsburg" class="uri">https://blog.23andme.com/articles/inbreeding-doomed-habsburg</a>.
 </div>
@@ -678,35 +679,35 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="fu"># Introduction</span></span>
 <span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>The study of genetic defects within isolated communities provides valuable insights into the impact of genetic relationships on population health. In a closed population, where individuals have limited mating options, the likelihood of inbreeding increases, potentially leading to a higher prevalence of genetic defects. This project focuses on modeling the development of such a community over time, with particular emphasis on the occurrence of individuals carrying defective genes due to genetic relationships between their parents. </span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>The study of genetic defects within isolated communities provides valuable insights into the impact of genetic relationships on population health. In a closed population, where individuals have limited mating options, the likelihood of inbreeding increases, potentially leading to a higher prevalence of genetic defects. This project focuses on modeling the development of such a community over time, with particular emphasis on the occurrence of individuals carrying defective genes due to genetic relationships between their parents.</span>
 <span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>The history of the Habsburg dynasty provides a fascinating example of the impact of inbreeding on the genetic health of a population. For centuries, the Habsburgs engaged in marriages within their own family to maintain power and influence in Europe. Unfortunately, this practice led to the accumulation of genetic defects, the most well-known manifestation of which was the so-called "Habsburg jaw"—a distinctive deformation of the mandible. Studies suggest that the high level of inbreeding within this dynasty contributed to health issues and even its eventual downfall.  </span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>The history of the Habsburg dynasty provides a fascinating example of the impact of inbreeding on the genetic health of a population. For centuries, the Habsburgs engaged in marriages within their own family to maintain power and influence in Europe. Unfortunately, this practice led to the accumulation of genetic defects, the most well-known manifestation of which was the so-called "Habsburg jaw"—a distinctive deformation of the mandible. Studies suggest that the high level of inbreeding within this dynasty contributed to health issues and even its eventual downfall.</span>
 <span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>:::: {.figure}</span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>!<span class="co">[</span><span class="ot">Karol II Habsburg. *Źródło*: [@CiekawostkiHistoryczneHabsburgs`]</span><span class="co">](img/img-01.jpg)</span>{width=40%}</span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>::::</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>::: figure</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>!<span class="co">[</span><span class="ot">Karol II Habsburg. *Źródło*: [@CiekawostkiHistoryczneHabsburgs\`]</span><span class="co">](img/img-01.jpg)</span>{width="40%"}</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>:::</span>
 <span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>The example of the Habsburgs illustrates how long-term practices of consanguineous marriages can lead to severe health consequences in closed populations. Analyzing such cases provides valuable insights into genetic dynamics and the risks associated with limited genetic diversity, which is particularly relevant in the context of modeling genetic defects in isolated communities. *Bases on* <span class="co">[</span><span class="ot">@23andMeInbreeding</span><span class="co">]</span>. </span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>The example of the Habsburgs illustrates how long-term practices of consanguineous marriages can lead to severe health consequences in closed populations. Analyzing such cases provides valuable insights into genetic dynamics and the risks associated with limited genetic diversity, which is particularly relevant in the context of modeling genetic defects in isolated communities. *Bases on* <span class="co">[</span><span class="ot">@23andMeInbreeding</span><span class="co">]</span>.</span>
 <span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>The goal of this project is to simulate the dynamics of an isolated tribe, where the population grows through successive generations. The key aspect under investigation is the frequency and distribution of genetic defects among tribe members, influenced by factors such as inbreeding probability and demographic parameters. For simplicity, it is assumed that genetic defects do not affect lifespan or reproductive capability, allowing us to isolate and study the effects of inbreeding on genetic health.</span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="fu"># Model Description</span></span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Size of the tribe**: The tribe starts with a fixed number $N$ of individuals in the initial generation. The number of women and men is the same, $N$ (it must be even) is determined by the user.  The tribe is isolated from other tribes.</span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Human age**: Women reach a random age consistent with a normal distribution $\mathcal{N}(\mu_F, \sigma^2_F)$, similary men reach a random age consistent with a normal distribution $\mathcal{N}(\mu_M, \sigma^2_M)$. The parameters $\mu_F, \sigma^2_F, \mu_M, \sigma^2_M$ are determined by the user.</span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Marriage**: Women, upon reaching age $t_F$, and men, upon reaching age $t_M$, form lifelong pairs. Pairing is random. The parameters $t_F$ and $t_M$ are determined by the user.</span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**Offspring**: </span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a><span class="ss">   1. </span>**Possibility**: Each pair has the chance to have offspring during the period $T_O$. The parameter $T_O$ is determined by the user.</span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="ss">   2. </span>**Number**: The number of offspring is determined by a Poisson distribution with parameter $\lambda$. The parameter $\lambda$ is determined by the user.</span>
-<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="ss">   3. </span>**Birth**: The moment of birth is random with uniform distribution in the period $<span class="co">[</span><span class="ot">0, T_O</span><span class="co">]</span>$. </span>
-<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>**Inbred**: </span>
-<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a><span class="ss">   1. </span>**Kinship**: A pair is considered related if they have common ancestors up to the third generation.</span>
-<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a><span class="ss">   2. </span>**Genetic defect**: A genetic defect will occur with a probability of $p_D$​ when a child is born to related parents. A person with a genetic defect passes it on to their offspring with a probability of $p_P$. The parameters $p_D$, $p_P$ are determined by the user.</span>
-<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>**Time of simulation**: The simulation time $T$ is defined by the user and must be long enough to encompass multiple generations.</span>
-<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a><span class="ss">7. </span>**We observe**: The simulation is intended to determine the empirical distribution of the number of individuals with a genetic defect.</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>The goal of this project is to simulate the dynamics of an isolated tribe, where the population grows through successive generations. The key aspect under investigation is the frequency and distribution of genetic defects among tribe members, influenced by factors such as inbreeding probability and demographic parameters. For simplicity, it is assumed that genetic defects do not affect lifespan or reproductive capability, allowing us to isolate and study the effects of inbreeding on genetic health.</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="fu"># Model Description</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>**Size of the tribe**: The tribe starts with a fixed even number $N$ of individuals in the initial generation. The number of women and men is the same, every is of legal age, but not older then 10 year from reaching legal age. The tribe is isolated from other tribes.</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>**Human age**: Women reach a random age consistent with a normal distribution $\mathcal{N}(\mu_F, \sigma^2_F)$, similary men reach a random age consistent with a normal distribution $\mathcal{N}(\mu_M, \sigma^2_M)$. The parameters $\mu_F, \sigma^2_F, \mu_M, \sigma^2_M$ are determined by the user.</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="ss">3.  </span>**Marriage**: Women, upon reaching age $t_F$, and men, upon reaching age $t_M$, form lifelong pairs. Pairing is random. The parameters $t_F$ and $t_M$ are determined by the user.</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="ss">4.  </span>**Offspring**:</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="ss">    1.  </span>**Reproductive age**: A woman can become pregnant up to age $t_F$, and a man can father a child up to age $t_M$. The parameters $t_F$ and $t_M$ are determined by the user.</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a><span class="ss">    2.  </span>**Possibility**: Each pair has the chance to have offspring during their reproductive years.</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="ss">    3.  </span>**Number**: The number of offspring is determined by a Poisson distribution with parameter $\lambda$. The parameter $\lambda$ is determined by the user.</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="ss">    4.  </span>**Birth**: The moment of birth for a married couple is random, with the additional assumption that the interval between births cannot be less than $d_B$. The parameter $d_B$ is determined by the user.</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a><span class="ss">5.  </span>**Inbred**:</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a><span class="ss">    1.  </span>**Kinship**: A pair is deemed to be related if they share a common ancestor within the past $K_G​$ generations. The parameter $K_G$ is determined by the user.</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a><span class="ss">    2.  </span>**Genetic defect**: A genetic defect will occur with a probability of $p_D$​ when a child is born to related parents. A person with a genetic defect passes it on to their offspring with a probability of $p_P$. The parameters $p_D$, $p_P$ are determined by the user.</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a><span class="ss">6.  </span>**Time of simulation**: The simulation time $T$ is defined by the user and must be long enough to encompass multiple generations.</span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a><span class="ss">7.  </span>**We observe**: The simulation is intended to determine the empirical distribution of the number of individuals with a genetic defect.</span>
 <span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a><span class="fu"># Bibliography</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a><span class="fu"># Bibliraphy</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 

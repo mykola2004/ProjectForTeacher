@@ -17,32 +17,32 @@ editor: visual
 
 # Introduction
 
-The study of genetic defects within isolated communities provides valuable insights into the impact of genetic relationships on population health. In a closed population, where individuals have limited mating options, the likelihood of inbreeding increases, potentially leading to a higher prevalence of genetic defects. This project focuses on modeling the development of such a community over time, with particular emphasis on the occurrence of individuals carrying defective genes due to genetic relationships between their parents. 
+The study of genetic defects within isolated communities provides valuable insights into the impact of genetic relationships on population health. In a closed population, where individuals have limited mating options, the likelihood of inbreeding increases, potentially leading to a higher prevalence of genetic defects. This project focuses on modeling the development of such a community over time, with particular emphasis on the occurrence of individuals carrying defective genes due to genetic relationships between their parents.
 
-The history of the Habsburg dynasty provides a fascinating example of the impact of inbreeding on the genetic health of a population. For centuries, the Habsburgs engaged in marriages within their own family to maintain power and influence in Europe. Unfortunately, this practice led to the accumulation of genetic defects, the most well-known manifestation of which was the so-called "Habsburg jaw"—a distinctive deformation of the mandible. Studies suggest that the high level of inbreeding within this dynasty contributed to health issues and even its eventual downfall.  
+The history of the Habsburg dynasty provides a fascinating example of the impact of inbreeding on the genetic health of a population. For centuries, the Habsburgs engaged in marriages within their own family to maintain power and influence in Europe. Unfortunately, this practice led to the accumulation of genetic defects, the most well-known manifestation of which was the so-called "Habsburg jaw"—a distinctive deformation of the mandible. Studies suggest that the high level of inbreeding within this dynasty contributed to health issues and even its eventual downfall.
 
-:::: {.figure}
-![Karol II Habsburg. *Źródło*: [@CiekawostkiHistoryczneHabsburgs`]](img/img-01.jpg){width=40%}
-::::
+::: figure
+![Karol II Habsburg. *Źródło*: [@CiekawostkiHistoryczneHabsburgs\`]](img/img-01.jpg){width="40%"}
+:::
 
-The example of the Habsburgs illustrates how long-term practices of consanguineous marriages can lead to severe health consequences in closed populations. Analyzing such cases provides valuable insights into genetic dynamics and the risks associated with limited genetic diversity, which is particularly relevant in the context of modeling genetic defects in isolated communities. *Bases on* [@23andMeInbreeding]. 
-
+The example of the Habsburgs illustrates how long-term practices of consanguineous marriages can lead to severe health consequences in closed populations. Analyzing such cases provides valuable insights into genetic dynamics and the risks associated with limited genetic diversity, which is particularly relevant in the context of modeling genetic defects in isolated communities. *Bases on* [@23andMeInbreeding].
 
 The goal of this project is to simulate the dynamics of an isolated tribe, where the population grows through successive generations. The key aspect under investigation is the frequency and distribution of genetic defects among tribe members, influenced by factors such as inbreeding probability and demographic parameters. For simplicity, it is assumed that genetic defects do not affect lifespan or reproductive capability, allowing us to isolate and study the effects of inbreeding on genetic health.
 
 # Model Description
 
-1. **Size of the tribe**: The tribe starts with a fixed number $N$ of individuals in the initial generation. The number of women and men is the same, $N$ (it must be even) is determined by the user.  The tribe is isolated from other tribes.
-2. **Human age**: Women reach a random age consistent with a normal distribution $\mathcal{N}(\mu_F, \sigma^2_F)$, similary men reach a random age consistent with a normal distribution $\mathcal{N}(\mu_M, \sigma^2_M)$. The parameters $\mu_F, \sigma^2_F, \mu_M, \sigma^2_M$ are determined by the user.
-3. **Marriage**: Women, upon reaching age $t_F$, and men, upon reaching age $t_M$, form lifelong pairs. Pairing is random. The parameters $t_F$ and $t_M$ are determined by the user.
-4. **Offspring**: 
-   1. **Possibility**: Each pair has the chance to have offspring during the period $T_O$. The parameter $T_O$ is determined by the user.
-   2. **Number**: The number of offspring is determined by a Poisson distribution with parameter $\lambda$. The parameter $\lambda$ is determined by the user.
-   3. **Birth**: The moment of birth is random with uniform distribution in the period $[0, T_O]$. 
-5. **Inbred**: 
-   1. **Kinship**: A pair is considered related if they have common ancestors up to the third generation.
-   2. **Genetic defect**: A genetic defect will occur with a probability of $p_D$​ when a child is born to related parents. A person with a genetic defect passes it on to their offspring with a probability of $p_P$. The parameters $p_D$, $p_P$ are determined by the user.
-6. **Time of simulation**: The simulation time $T$ is defined by the user and must be long enough to encompass multiple generations.
-7. **We observe**: The simulation is intended to determine the empirical distribution of the number of individuals with a genetic defect.
+1.  **Size of the tribe**: The tribe starts with a fixed even number $N$ of individuals in the initial generation. The number of women and men is the same, every is of legal age, but not older then 10 year from reaching legal age. The tribe is isolated from other tribes.
+2.  **Human age**: Women reach a random age consistent with a normal distribution $\mathcal{N}(\mu_F, \sigma^2_F)$, similary men reach a random age consistent with a normal distribution $\mathcal{N}(\mu_M, \sigma^2_M)$. The parameters $\mu_F, \sigma^2_F, \mu_M, \sigma^2_M$ are determined by the user.
+3.  **Marriage**: Women, upon reaching age $t_F$, and men, upon reaching age $t_M$, form lifelong pairs. Pairing is random. The parameters $t_F$ and $t_M$ are determined by the user.
+4.  **Offspring**:
+    1.  **Reproductive age**: A woman can become pregnant up to age $t_F$, and a man can father a child up to age $t_M$. The parameters $t_F$ and $t_M$ are determined by the user.
+    2.  **Possibility**: Each pair has the chance to have offspring during their reproductive years.
+    3.  **Number**: The number of offspring is determined by a Poisson distribution with parameter $\lambda$. The parameter $\lambda$ is determined by the user.
+    4.  **Birth**: The moment of birth for a married couple is random, with the additional assumption that the interval between births cannot be less than $d_B$. The parameter $d_B$ is determined by the user.
+5.  **Inbred**:
+    1.  **Kinship**: A pair is deemed to be related if they share a common ancestor within the past $K_G​$ generations. The parameter $K_G$ is determined by the user.
+    2.  **Genetic defect**: A genetic defect will occur with a probability of $p_D$​ when a child is born to related parents. A person with a genetic defect passes it on to their offspring with a probability of $p_P$. The parameters $p_D$, $p_P$ are determined by the user.
+6.  **Time of simulation**: The simulation time $T$ is defined by the user and must be long enough to encompass multiple generations.
+7.  **We observe**: The simulation is intended to determine the empirical distribution of the number of individuals with a genetic defect.
 
-# Bibliography
+# Bibliraphy
