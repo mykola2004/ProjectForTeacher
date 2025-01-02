@@ -89,6 +89,9 @@ div.csl-indent {
 <script src="simulation_report_files/libs/bootstrap/bootstrap.min.js"></script>
 <link href="simulation_report_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="simulation_report_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="https://d3js.org/d3.v6.min.js"></script>
+<script src="img/javascript/shared.js" "=""></script>
+<script src="img/javascript/script.js" "=""></script>
 
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
@@ -132,7 +135,13 @@ window.Quarto = {
   <ul class="collapse">
   <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">1</span> Introduction</a></li>
   <li><a href="#model-description" id="toc-model-description" class="nav-link" data-scroll-target="#model-description"><span class="header-section-number">2</span> Model Description</a></li>
-  <li><a href="#bibliraphy" id="toc-bibliraphy" class="nav-link" data-scroll-target="#bibliraphy"><span class="header-section-number">3</span> Bibliraphy</a></li>
+  <li><a href="#algorithm" id="toc-algorithm" class="nav-link" data-scroll-target="#algorithm"><span class="header-section-number">3</span> Algorithm</a>
+  <ul class="collapse">
+  <li><a href="#input-data" id="toc-input-data" class="nav-link" data-scroll-target="#input-data">Input data</a></li>
+  <li><a href="#output-data" id="toc-output-data" class="nav-link" data-scroll-target="#output-data">Output data</a></li>
+  <li><a href="#example" id="toc-example" class="nav-link" data-scroll-target="#example"><span class="header-section-number">3.1</span> Example</a></li>
+  </ul></li>
+  <li><a href="#bibliraphy" id="toc-bibliraphy" class="nav-link" data-scroll-target="#bibliraphy"><span class="header-section-number">4</span> Bibliraphy</a></li>
   </ul>
 </nav>
 </div>
@@ -206,14 +215,101 @@ window.Quarto = {
 <li><strong>We observe</strong>: The simulation is intended to determine the empirical distribution of the number of individuals with a genetic defect.</li>
 </ol>
 </section>
-<section id="bibliraphy" class="level1" data-number="3">
+<section id="algorithm" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Algorithm</h1>
+<section id="input-data" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="input-data">Input data</h2>
+<ul>
+<li><code>N</code> - The initial number of individuals in the tribe.</li>
+<li><code>t_F</code> - Age of maturity for women.</li>
+<li><code>t_M</code> - Age of maturity for men.</li>
+<li><code>q_F</code> - Maximum age for female fertility.</li>
+<li><code>q_M</code> - Maximum age for male fertility.</li>
+<li><code>mu_F, s2_F</code> - Parameters of the normal distribution describing women’s mortality age.</li>
+<li><code>mu_M, s2_M</code> - Parameters of the normal distribution describing men’s mortality age.</li>
+<li><code>lambda_par</code> - The parameter of the Poisson distribution determining the number of offspring.</li>
+<li><code>d_B</code> - Minimum time between pregnancies for each pair.</li>
+<li><code>K_G</code> - Number of generations back to consider kinship.</li>
+<li><code>p_D</code> - Probability of a genetic defect in offspring of related parents.</li>
+<li><code>p_P</code> - Probability of passing on a genetic defect to offspring.</li>
+<li><code>T</code> - Simulation time.</li>
+</ul>
+</section>
+<section id="output-data" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="output-data">Output data</h2>
+<p>The simulation results will be organized into a table <code>TD</code> with these columns:</p>
+<ul>
+<li><code>id</code> - Individual identifier.</li>
+<li><code>sex</code> - Sex.</li>
+<li><code>parents</code> - IDs of parents.</li>
+<li><code>year_birth</code> - Year of birth.</li>
+<li><code>defect</code> - Presence of a genetic defect.</li>
+<li><code>age</code> - Age at the end of the simulation.</li>
+<li><code>age_death</code> - Age at death.</li>
+<li><code>marriage</code> - IDs of marriage partners.</li>
+</ul>
+</section>
+<section id="example" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="example"><span class="header-section-number">3.1</span> Example</h2>
+<p>To illustrate how the algorithm works, let’s assume the following parameter values:</p>
+<div class="columns">
+<div class="column" style="width:33%;">
+<ul>
+<li><code>N</code> = 10</li>
+<li><code>t_F</code> = 19</li>
+<li><code>q_F</code> = 39</li>
+<li><code>t_M</code> = 21</li>
+<li><code>q_M</code> = 41</li>
+</ul>
+</div><div class="column" style="width:33%;">
+<ul>
+<li><code>mu_F</code> = 80</li>
+<li><code>s2_F</code> = 5</li>
+<li><code>mu_M</code> = 75</li>
+<li><code>s2_M</code> = 7</li>
+<li><code>lambda_par</code> = 1</li>
+</ul>
+</div><div class="column" style="width:33%;">
+<ul>
+<li><code>d_B</code> = 1</li>
+<li><code>K_G</code> = 3</li>
+<li><code>p_D</code> = 0.9</li>
+<li><code>p_P</code> = 0.25</li>
+<li><code>T</code> = 160</li>
+</ul>
+</div>
+</div>
+<p>The following chart presents the subsequent years in the simulation, with the adopted symbolism:</p>
+<ul>
+<li>Women and men without genetic defects: <svg width="50" height="30"> <g transform="translate(10,10)"> <path d="M0,-10A10,10 0 1,1 0,10A10,10 0 1,1 0,-10" fill="#FFE0BD"></path> <path d="M 0,-12.408065 10.745699,6.2040324 -10.745699,6.2040324 Z" fill="#FFE0BD" transform="translate(30,2)"></path> </g> </svg></li>
+<li>Women and men with genetic defects: <svg width="50" height="30"> <g transform="translate(10,10)"> <path d="M0,-10A10,10 0 1,1 0,10A10,10 0 1,1 0,-10" fill="#D3D3D3"></path> <path d="M 0,-12.408065 10.745699,6.2040324 -10.745699,6.2040324 Z" fill="#D3D3D3" transform="translate(30,2)"></path> </g> </svg></li>
+<li>Deceased women and men: <svg width="50" height="30"> <g transform="translate(10,10)"> <path d="M0,-10A10,10 0 1,1 0,10A10,10 0 1,1 0,-10" fill="#FFE0BD" stroke="#000000" stroke-width="0.8"></path> <path d="M 0,-12.408065 10.745699,6.2040324 -10.745699,6.2040324 Z" fill="#FFE0BD" stroke="#000000" stroke-width="0.8" transform="translate(30,2)"></path> </g> </svg></li>
+<li>Unrelated pair: <svg width="50" height="30"> <g transform="translate(10,10)"> <path d="M -7.0710678118654755,-7.0710678118654755 h 14.142135623730951 v 14.142135623730951 h -14.142135623730951Z" fill="orange"></path> </g> </svg></li>
+<li>Related pair: <svg width="50" height="30"> <g transform="translate(10,10)"> <path d="M -7.0710678118654755,-7.0710678118654755 h 14.142135623730951 v 14.142135623730951 h -14.142135623730951Z" fill="#D3D3D3"></path> </g> </svg></li>
+<li>Indication of individuals forming a pair: <svg width="50" height="30"> <line x1="5" y1="10" x2="45" y2="10" stroke="orange" stroke-width="3"></line> </svg></li>
+<li>Offspring of a married couple: <svg width="50" height="30"> <line x1="5" y1="10" x2="45" y2="10" stroke="red" stroke-width="1"></line> </svg></li>
+</ul>
+<p>Use the ‘previous’/‘next’ buttons to browse through the subsequent years of the simulation.</p>
+<div id="graf">
+
+</div>
+<button id="prev-button">
+Previous
+</button>
+<button id="next-button">
+Next
+</button>
+<p>The first pair (id: 14; 15), which is related, appears in year 51. The first offspring (id: 31) from a related pair (id: 17; 18) is born in year 59. The first person (female, id: 9) dies in year 72.</p>
+</section>
+</section>
+<section id="bibliraphy" class="level1" data-number="4">
 
 <!-- -->
 
 
 </section>
 
-<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">3 Bibliraphy</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">4 Bibliraphy</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
 <div id="ref-23andMeInbreeding" class="csl-entry" role="listitem">
 23andMe. 2023. <span>“Inbreeding Doomed the Habsburgs, Study Finds.”</span> <a href="https://blog.23andme.com/articles/inbreeding-doomed-habsburg" class="uri">https://blog.23andme.com/articles/inbreeding-doomed-habsburg</a>.
 </div>
@@ -674,40 +770,160 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co">    theme: cosmo</span></span>
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co">    bibliography: references.bib   </span></span>
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co">    bibliographystyle: apa </span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="an">editor:</span><span class="co"> visual</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="fu"># Introduction</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>The study of genetic defects within isolated communities provides valuable insights into the impact of genetic relationships on population health. In a closed population, where individuals have limited mating options, the likelihood of inbreeding increases, potentially leading to a higher prevalence of genetic defects. This project focuses on modeling the development of such a community over time, with particular emphasis on the occurrence of individuals carrying defective genes due to genetic relationships between their parents.</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>The history of the Habsburg dynasty provides a fascinating example of the impact of inbreeding on the genetic health of a population. For centuries, the Habsburgs engaged in marriages within their own family to maintain power and influence in Europe. Unfortunately, this practice led to the accumulation of genetic defects, the most well-known manifestation of which was the so-called "Habsburg jaw"—a distinctive deformation of the mandible. Studies suggest that the high level of inbreeding within this dynasty contributed to health issues and even its eventual downfall.</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co">    include-in-header:</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co">      - text: |</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co">            &lt;script src="https://d3js.org/d3.v6.min.js"&gt;&lt;/script&gt;</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co">            &lt;script src="img/javascript/shared.js""&gt;&lt;/script&gt;</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co">            &lt;script src="img/javascript/script.js""&gt;&lt;/script&gt;            </span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="an">editor:</span><span class="co"> visual</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
 <span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>::: figure</span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>!<span class="co">[</span><span class="ot">Karol II Habsburg. *Źródło*: [@CiekawostkiHistoryczneHabsburgs\`]</span><span class="co">](img/img-01.jpg)</span>{width="40%"}</span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="fu"># Introduction</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>The study of genetic defects within isolated communities provides valuable insights into the impact of genetic relationships on population health. In a closed population, where individuals have limited mating options, the likelihood of inbreeding increases, potentially leading to a higher prevalence of genetic defects. This project focuses on modeling the development of such a community over time, with particular emphasis on the occurrence of individuals carrying defective genes due to genetic relationships between their parents.</span>
 <span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>The example of the Habsburgs illustrates how long-term practices of consanguineous marriages can lead to severe health consequences in closed populations. Analyzing such cases provides valuable insights into genetic dynamics and the risks associated with limited genetic diversity, which is particularly relevant in the context of modeling genetic defects in isolated communities. *Bases on* <span class="co">[</span><span class="ot">@23andMeInbreeding</span><span class="co">]</span>.</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>The history of the Habsburg dynasty provides a fascinating example of the impact of inbreeding on the genetic health of a population. For centuries, the Habsburgs engaged in marriages within their own family to maintain power and influence in Europe. Unfortunately, this practice led to the accumulation of genetic defects, the most well-known manifestation of which was the so-called "Habsburg jaw"—a distinctive deformation of the mandible. Studies suggest that the high level of inbreeding within this dynasty contributed to health issues and even its eventual downfall.</span>
 <span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>The goal of this project is to simulate the dynamics of an isolated tribe, where the population grows through successive generations. The key aspect under investigation is the frequency and distribution of genetic defects among tribe members, influenced by factors such as inbreeding probability and demographic parameters. For simplicity, it is assumed that genetic defects do not affect lifespan or reproductive capability, allowing us to isolate and study the effects of inbreeding on genetic health.</span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="fu"># Model Description</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>::: figure</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>!<span class="co">[</span><span class="ot">Karol II Habsburg. *Źródło*: [@CiekawostkiHistoryczneHabsburgs\`]</span><span class="co">](img/img-01.jpg)</span>{width="40%"}</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>:::</span>
 <span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>**Size of the tribe**: The tribe starts with a fixed even number $N$ of individuals in the initial generation. The number of women and men is the same, every is of legal age, but not older then 10 year from reaching legal age. The tribe is isolated from other tribes.</span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>**Human age**: Women reach a random age consistent with a normal distribution $\mathcal{N}(\mu_F, \sigma^2_F)$, similary men reach a random age consistent with a normal distribution $\mathcal{N}(\mu_M, \sigma^2_M)$. The parameters $\mu_F, \sigma^2_F, \mu_M, \sigma^2_M$ are determined by the user.</span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="ss">3.  </span>**Marriage**: Women, upon reaching age $t_F$, and men, upon reaching age $t_M$, form lifelong pairs. Pairing is random. The parameters $t_F$ and $t_M$ are determined by the user.</span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="ss">4.  </span>**Offspring**:</span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="ss">    1.  </span>**Reproductive age**: A woman can become pregnant up to age $t_F$, and a man can father a child up to age $t_M$. The parameters $t_F$ and $t_M$ are determined by the user.</span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a><span class="ss">    2.  </span>**Possibility**: Each pair has the chance to have offspring during their reproductive years.</span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="ss">    3.  </span>**Number**: The number of offspring is determined by a Poisson distribution with parameter $\lambda$. The parameter $\lambda$ is determined by the user.</span>
-<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="ss">    4.  </span>**Birth**: The moment of birth for a married couple is random, with the additional assumption that the interval between births cannot be less than $d_B$. The parameter $d_B$ is determined by the user.</span>
-<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a><span class="ss">5.  </span>**Inbred**:</span>
-<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a><span class="ss">    1.  </span>**Kinship**: A pair is deemed to be related if they share a common ancestor within the past $K_G​$ generations. The parameter $K_G$ is determined by the user.</span>
-<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a><span class="ss">    2.  </span>**Genetic defect**: A genetic defect will occur with a probability of $p_D$​ when a child is born to related parents. A person with a genetic defect passes it on to their offspring with a probability of $p_P$. The parameters $p_D$, $p_P$ are determined by the user.</span>
-<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a><span class="ss">6.  </span>**Time of simulation**: The simulation time $T$ is defined by the user and must be long enough to encompass multiple generations.</span>
-<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a><span class="ss">7.  </span>**We observe**: The simulation is intended to determine the empirical distribution of the number of individuals with a genetic defect.</span>
-<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a><span class="fu"># Bibliraphy</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>The example of the Habsburgs illustrates how long-term practices of consanguineous marriages can lead to severe health consequences in closed populations. Analyzing such cases provides valuable insights into genetic dynamics and the risks associated with limited genetic diversity, which is particularly relevant in the context of modeling genetic defects in isolated communities. *Bases on* <span class="co">[</span><span class="ot">@23andMeInbreeding</span><span class="co">]</span>.</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>The goal of this project is to simulate the dynamics of an isolated tribe, where the population grows through successive generations. The key aspect under investigation is the frequency and distribution of genetic defects among tribe members, influenced by factors such as inbreeding probability and demographic parameters. For simplicity, it is assumed that genetic defects do not affect lifespan or reproductive capability, allowing us to isolate and study the effects of inbreeding on genetic health.</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="fu"># Model Description</span></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>**Size of the tribe**: The tribe starts with a fixed even number $N$ of individuals in the initial generation. The number of women and men is the same, every is of legal age, but not older then 10 year from reaching legal age. The tribe is isolated from other tribes.</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>**Human age**: Women reach a random age consistent with a normal distribution $\mathcal{N}(\mu_F, \sigma^2_F)$, similary men reach a random age consistent with a normal distribution $\mathcal{N}(\mu_M, \sigma^2_M)$. The parameters $\mu_F, \sigma^2_F, \mu_M, \sigma^2_M$ are determined by the user.</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a><span class="ss">3.  </span>**Marriage**: Women, upon reaching age $t_F$, and men, upon reaching age $t_M$, form lifelong pairs. Pairing is random. The parameters $t_F$ and $t_M$ are determined by the user.</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a><span class="ss">4.  </span>**Offspring**:</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a><span class="ss">    1.  </span>**Reproductive age**: A woman can become pregnant up to age $t_F$, and a man can father a child up to age $t_M$. The parameters $t_F$ and $t_M$ are determined by the user.</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a><span class="ss">    2.  </span>**Possibility**: Each pair has the chance to have offspring during their reproductive years.</span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a><span class="ss">    3.  </span>**Number**: The number of offspring is determined by a Poisson distribution with parameter $\lambda$. The parameter $\lambda$ is determined by the user.</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a><span class="ss">    4.  </span>**Birth**: The moment of birth for a married couple is random, with the additional assumption that the interval between births cannot be less than $d_B$. The parameter $d_B$ is determined by the user.</span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a><span class="ss">5.  </span>**Inbred**:</span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a><span class="ss">    1.  </span>**Kinship**: A pair is deemed to be related if they share a common ancestor within the past $K_G​$ generations. The parameter $K_G$ is determined by the user.</span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a><span class="ss">    2.  </span>**Genetic defect**: A genetic defect will occur with a probability of $p_D$​ when a child is born to related parents. A person with a genetic defect passes it on to their offspring with a probability of $p_P$. The parameters $p_D$, $p_P$ are determined by the user.</span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a><span class="ss">6.  </span>**Time of simulation**: The simulation time $T$ is defined by the user and must be long enough to encompass multiple generations.</span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a><span class="ss">7.  </span>**We observe**: The simulation is intended to determine the empirical distribution of the number of individuals with a genetic defect.</span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a><span class="fu"># Algorithm</span></span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a><span class="fu">## Input data {.unnumbered}</span></span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`N`</span> - The initial number of individuals in the tribe.</span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`t_F`</span> - Age of maturity for women.</span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`t_M`</span> - Age of maturity for men.</span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`q_F`</span> - Maximum age for female fertility.</span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`q_M`</span> - Maximum age for male fertility.</span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`mu_F, s2_F`</span> - Parameters of the normal distribution describing women's mortality age.</span>
+<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`mu_M, s2_M`</span> - Parameters of the normal distribution describing men's mortality age.</span>
+<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`lambda_par`</span> - The parameter of the Poisson distribution determining the number of offspring.</span>
+<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`d_B`</span> - Minimum time between pregnancies for each pair.</span>
+<span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`K_G`</span> - Number of generations back to consider kinship.</span>
+<span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`p_D`</span> - Probability of a genetic defect in offspring of related parents.</span>
+<span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`p_P`</span> - Probability of passing on a genetic defect to offspring.</span>
+<span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`T`</span> - Simulation time.</span>
+<span id="cb1-71"><a href="#cb1-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-72"><a href="#cb1-72" aria-hidden="true" tabindex="-1"></a><span class="fu">## Output data {.unnumbered}</span></span>
+<span id="cb1-73"><a href="#cb1-73" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-74"><a href="#cb1-74" aria-hidden="true" tabindex="-1"></a>The simulation results will be organized into a table <span class="in">`TD`</span> with these columns:</span>
+<span id="cb1-75"><a href="#cb1-75" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-76"><a href="#cb1-76" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`id`</span> - Individual identifier.</span>
+<span id="cb1-77"><a href="#cb1-77" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`sex`</span> - Sex.</span>
+<span id="cb1-78"><a href="#cb1-78" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`parents`</span> - IDs of parents.</span>
+<span id="cb1-79"><a href="#cb1-79" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`year_birth`</span> - Year of birth.</span>
+<span id="cb1-80"><a href="#cb1-80" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`defect`</span> - Presence of a genetic defect.</span>
+<span id="cb1-81"><a href="#cb1-81" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`age`</span> - Age at the end of the simulation.</span>
+<span id="cb1-82"><a href="#cb1-82" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`age_death`</span> - Age at death.</span>
+<span id="cb1-83"><a href="#cb1-83" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`marriage`</span> - IDs of marriage partners.</span>
+<span id="cb1-84"><a href="#cb1-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-85"><a href="#cb1-85" aria-hidden="true" tabindex="-1"></a><span class="fu">## Example</span></span>
+<span id="cb1-86"><a href="#cb1-86" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-87"><a href="#cb1-87" aria-hidden="true" tabindex="-1"></a>To illustrate how the algorithm works, let's assume the following parameter values:</span>
+<span id="cb1-88"><a href="#cb1-88" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-89"><a href="#cb1-89" aria-hidden="true" tabindex="-1"></a>::: {.columns}</span>
+<span id="cb1-90"><a href="#cb1-90" aria-hidden="true" tabindex="-1"></a>::: {.column width="33%"}</span>
+<span id="cb1-91"><a href="#cb1-91" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`N`</span> = 10</span>
+<span id="cb1-92"><a href="#cb1-92" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`t_F`</span> = 19</span>
+<span id="cb1-93"><a href="#cb1-93" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`q_F`</span> = 39</span>
+<span id="cb1-94"><a href="#cb1-94" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`t_M`</span> = 21</span>
+<span id="cb1-95"><a href="#cb1-95" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`q_M`</span> = 41</span>
+<span id="cb1-96"><a href="#cb1-96" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-97"><a href="#cb1-97" aria-hidden="true" tabindex="-1"></a>::: {.column width="33%"}</span>
+<span id="cb1-98"><a href="#cb1-98" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`mu_F`</span> = 80</span>
+<span id="cb1-99"><a href="#cb1-99" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`s2_F`</span> = 5</span>
+<span id="cb1-100"><a href="#cb1-100" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`mu_M`</span> = 75</span>
+<span id="cb1-101"><a href="#cb1-101" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`s2_M`</span> = 7</span>
+<span id="cb1-102"><a href="#cb1-102" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`lambda_par`</span> = 1</span>
+<span id="cb1-103"><a href="#cb1-103" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-104"><a href="#cb1-104" aria-hidden="true" tabindex="-1"></a>::: {.column width="33%"}</span>
+<span id="cb1-105"><a href="#cb1-105" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`d_B`</span> = 1</span>
+<span id="cb1-106"><a href="#cb1-106" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`K_G`</span> = 3</span>
+<span id="cb1-107"><a href="#cb1-107" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`p_D`</span> = 0.9</span>
+<span id="cb1-108"><a href="#cb1-108" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`p_P`</span> = 0.25</span>
+<span id="cb1-109"><a href="#cb1-109" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`T`</span> = 160</span>
+<span id="cb1-110"><a href="#cb1-110" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-111"><a href="#cb1-111" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-112"><a href="#cb1-112" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-113"><a href="#cb1-113" aria-hidden="true" tabindex="-1"></a>The following chart presents the subsequent years in the simulation, with the adopted symbolism:</span>
+<span id="cb1-114"><a href="#cb1-114" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-115"><a href="#cb1-115" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Women and men without genetic defects:</span>
+<span id="cb1-116"><a href="#cb1-116" aria-hidden="true" tabindex="-1"></a>&lt;svg width="50" height="30"&gt;</span>
+<span id="cb1-117"><a href="#cb1-117" aria-hidden="true" tabindex="-1"></a>  &lt;g transform="translate(10,10)"&gt;</span>
+<span id="cb1-118"><a href="#cb1-118" aria-hidden="true" tabindex="-1"></a>    &lt;path d="M0,-10A10,10 0 1,1 0,10A10,10 0 1,1 0,-10" fill="#FFE0BD"&gt;&lt;/path&gt;</span>
+<span id="cb1-119"><a href="#cb1-119" aria-hidden="true" tabindex="-1"></a>    &lt;path d="M 0,-12.408065 10.745699,6.2040324 -10.745699,6.2040324 Z" fill="#FFE0BD" transform="translate(30,2)"&gt;&lt;/path&gt;</span>
+<span id="cb1-120"><a href="#cb1-120" aria-hidden="true" tabindex="-1"></a>  &lt;/g&gt;</span>
+<span id="cb1-121"><a href="#cb1-121" aria-hidden="true" tabindex="-1"></a>&lt;/svg&gt;</span>
+<span id="cb1-122"><a href="#cb1-122" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Women and men with genetic defects:</span>
+<span id="cb1-123"><a href="#cb1-123" aria-hidden="true" tabindex="-1"></a>&lt;svg width="50" height="30"&gt;</span>
+<span id="cb1-124"><a href="#cb1-124" aria-hidden="true" tabindex="-1"></a>  &lt;g transform="translate(10,10)"&gt;</span>
+<span id="cb1-125"><a href="#cb1-125" aria-hidden="true" tabindex="-1"></a>    &lt;path d="M0,-10A10,10 0 1,1 0,10A10,10 0 1,1 0,-10" fill="#D3D3D3"&gt;&lt;/path&gt;</span>
+<span id="cb1-126"><a href="#cb1-126" aria-hidden="true" tabindex="-1"></a>    &lt;path d="M 0,-12.408065 10.745699,6.2040324 -10.745699,6.2040324 Z" fill="#D3D3D3" transform="translate(30,2)"&gt;&lt;/path&gt;</span>
+<span id="cb1-127"><a href="#cb1-127" aria-hidden="true" tabindex="-1"></a>  &lt;/g&gt;</span>
+<span id="cb1-128"><a href="#cb1-128" aria-hidden="true" tabindex="-1"></a>&lt;/svg&gt;</span>
+<span id="cb1-129"><a href="#cb1-129" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Deceased women and men:</span>
+<span id="cb1-130"><a href="#cb1-130" aria-hidden="true" tabindex="-1"></a>&lt;svg width="50" height="30"&gt;</span>
+<span id="cb1-131"><a href="#cb1-131" aria-hidden="true" tabindex="-1"></a>  &lt;g transform="translate(10,10)"&gt;</span>
+<span id="cb1-132"><a href="#cb1-132" aria-hidden="true" tabindex="-1"></a>    &lt;path d="M0,-10A10,10 0 1,1 0,10A10,10 0 1,1 0,-10" fill="#FFE0BD" stroke="#000000" stroke-width=0.8&gt;&lt;/path&gt;</span>
+<span id="cb1-133"><a href="#cb1-133" aria-hidden="true" tabindex="-1"></a>    &lt;path d="M 0,-12.408065 10.745699,6.2040324 -10.745699,6.2040324 Z" fill="#FFE0BD"  stroke="#000000" stroke-width=0.8 transform="translate(30,2)"&gt;&lt;/path&gt;</span>
+<span id="cb1-134"><a href="#cb1-134" aria-hidden="true" tabindex="-1"></a>  &lt;/g&gt;</span>
+<span id="cb1-135"><a href="#cb1-135" aria-hidden="true" tabindex="-1"></a>&lt;/svg&gt;</span>
+<span id="cb1-136"><a href="#cb1-136" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Unrelated pair:</span>
+<span id="cb1-137"><a href="#cb1-137" aria-hidden="true" tabindex="-1"></a>&lt;svg width="50" height="30"&gt;</span>
+<span id="cb1-138"><a href="#cb1-138" aria-hidden="true" tabindex="-1"></a>  &lt;g transform="translate(10,10)"&gt;</span>
+<span id="cb1-139"><a href="#cb1-139" aria-hidden="true" tabindex="-1"></a>    &lt;path d="M -7.0710678118654755,-7.0710678118654755 h 14.142135623730951 v 14.142135623730951 h -14.142135623730951Z" fill="orange"&gt;&lt;/path&gt;</span>
+<span id="cb1-140"><a href="#cb1-140" aria-hidden="true" tabindex="-1"></a>  &lt;/g&gt;</span>
+<span id="cb1-141"><a href="#cb1-141" aria-hidden="true" tabindex="-1"></a>&lt;/svg&gt;</span>
+<span id="cb1-142"><a href="#cb1-142" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Related pair:</span>
+<span id="cb1-143"><a href="#cb1-143" aria-hidden="true" tabindex="-1"></a>&lt;svg width="50" height="30"&gt;</span>
+<span id="cb1-144"><a href="#cb1-144" aria-hidden="true" tabindex="-1"></a>  &lt;g transform="translate(10,10)"&gt;</span>
+<span id="cb1-145"><a href="#cb1-145" aria-hidden="true" tabindex="-1"></a>    &lt;path d="M -7.0710678118654755,-7.0710678118654755 h 14.142135623730951 v 14.142135623730951 h -14.142135623730951Z" fill="#D3D3D3"&gt;&lt;/path&gt;</span>
+<span id="cb1-146"><a href="#cb1-146" aria-hidden="true" tabindex="-1"></a>  &lt;/g&gt;</span>
+<span id="cb1-147"><a href="#cb1-147" aria-hidden="true" tabindex="-1"></a>&lt;/svg&gt;</span>
+<span id="cb1-148"><a href="#cb1-148" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Indication of individuals forming a pair:</span>
+<span id="cb1-149"><a href="#cb1-149" aria-hidden="true" tabindex="-1"></a>&lt;svg width="50" height="30"&gt;</span>
+<span id="cb1-150"><a href="#cb1-150" aria-hidden="true" tabindex="-1"></a>&lt;line x1="5" y1="10" x2="45" y2="10" stroke="orange" stroke-width="3" /&gt;</span>
+<span id="cb1-151"><a href="#cb1-151" aria-hidden="true" tabindex="-1"></a>&lt;/svg&gt;</span>
+<span id="cb1-152"><a href="#cb1-152" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Offspring of a married couple:</span>
+<span id="cb1-153"><a href="#cb1-153" aria-hidden="true" tabindex="-1"></a>&lt;svg width="50" height="30"&gt;</span>
+<span id="cb1-154"><a href="#cb1-154" aria-hidden="true" tabindex="-1"></a>&lt;line x1="5" y1="10" x2="45" y2="10" stroke="red" stroke-width="1" /&gt;</span>
+<span id="cb1-155"><a href="#cb1-155" aria-hidden="true" tabindex="-1"></a>&lt;/svg&gt;</span>
+<span id="cb1-156"><a href="#cb1-156" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-157"><a href="#cb1-157" aria-hidden="true" tabindex="-1"></a>Use the 'previous'/'next' buttons to browse through the subsequent years of the simulation.</span>
+<span id="cb1-158"><a href="#cb1-158" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-159"><a href="#cb1-159" aria-hidden="true" tabindex="-1"></a>::: {#graf}</span>
+<span id="cb1-160"><a href="#cb1-160" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-161"><a href="#cb1-161" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-162"><a href="#cb1-162" aria-hidden="true" tabindex="-1"></a>&lt;button id="prev-button"&gt;Previous&lt;/button&gt;</span>
+<span id="cb1-163"><a href="#cb1-163" aria-hidden="true" tabindex="-1"></a>&lt;button id="next-button"&gt;Next&lt;/button&gt;</span>
+<span id="cb1-164"><a href="#cb1-164" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-165"><a href="#cb1-165" aria-hidden="true" tabindex="-1"></a>The first pair (id: 14; 15), which is related, appears in year 51. The first offspring (id: 31) from a related pair (id: 17; 18) is born in year 59. The first person (female, id: 9) dies in year 72.</span>
+<span id="cb1-166"><a href="#cb1-166" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-167"><a href="#cb1-167" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-168"><a href="#cb1-168" aria-hidden="true" tabindex="-1"></a><span class="fu"># Bibliraphy</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 
