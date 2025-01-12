@@ -139,6 +139,7 @@ window.Quarto = {
   <ul class="collapse">
   <li><a href="#input-data" id="toc-input-data" class="nav-link" data-scroll-target="#input-data">Input data</a></li>
   <li><a href="#output-data" id="toc-output-data" class="nav-link" data-scroll-target="#output-data">Output data</a></li>
+  <li><a href="#algorithm-steps" id="toc-algorithm-steps" class="nav-link" data-scroll-target="#algorithm-steps">Algorithm steps</a></li>
   <li><a href="#example" id="toc-example" class="nav-link" data-scroll-target="#example"><span class="header-section-number">3.1</span> Example</a></li>
   </ul></li>
   <li><a href="#bibliraphy" id="toc-bibliraphy" class="nav-link" data-scroll-target="#bibliraphy"><span class="header-section-number">4</span> Bibliraphy</a></li>
@@ -247,6 +248,42 @@ window.Quarto = {
 <li><code>age</code> - Age at the end of the simulation.</li>
 <li><code>age_death</code> - Age at death.</li>
 <li><code>marriage</code> - IDs of marriage partners.</li>
+<li><code>marriage_year</code> - Year of marriage.</li>
+<li><code>marriage_related</code> - Indicator of related marriage.</li>
+</ul>
+</section>
+<section id="algorithm-steps" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="algorithm-steps">Algorithm steps</h2>
+<ul>
+<li><strong>Initiation</strong>
+<ol type="1">
+<li>Initialize tables <code>TD</code>, <code>TD_Birth</code>, <code>TD_Death</code> with columns <code>id</code>, <code>sex</code>, <code>parents</code>, <code>year_birth</code>, <code>defect</code>, <code>age</code>, <code>age_death</code>, <code>marriage</code>, <code>marriage_year</code>, <code>marriage_related</code>.</li>
+<li>Generate a population of size <code>N</code> consisting of an equal number of men and women aged from 0 to 10 years. Save the population to the <code>TD</code>.</li>
+<li>Set <code>year</code> to the maximum age in the population.</li>
+</ol></li>
+<li><strong>Loop</strong> <br>
+<ol type="1">
+<li>Increase <code>year</code> by 1.</li>
+<li>Update the age of each individual in the <code>TD</code>.</li>
+<li>If an individual has reached the age of death, save them to the <code>TD_Death</code> and remove them from the <code>TD</code>.</li>
+<li>If the birth year in the <code>TD_Birth</code> is equal to <code>year</code>, add the newborn individuals to the <code>TD</code> and remove them from the <code>TD_Birth</code>.</li>
+<li>Check if new marriages can be formed. If not, go to step 1.</li>
+<li>Form new marriages and save them to the <code>TD</code>. For each newly formed pair, save <code>marriage_year</code> as the current year.</li>
+<li>For each newly formed pair:
+<ol type="1">
+<li>Check if the pair is related up to <code>K_G</code> generations back. If so, set <code>marriage_related</code> to <code>True</code>, otherwise set it to <code>False</code>.</li>
+<li>Draw the number of offspring from a Poisson distribution with parameter <code>lambda_par</code>.</li>
+<li>For each offspring:
+<ol type="1">
+<li>Draw the year of birth considering the interval between births <code>d_B</code>.</li>
+<li>Draw the year of death according to the normal distribution of lifespan for the given sex (female: <code>mu_F, s2_F</code>, male: <code>mu_M, s2_M</code>).</li>
+<li>Draw the occurrence of a genetic defect with probability <code>p_D</code> for offspring from related parents and <code>p_P</code> for offspring from a parent with a genetic defect.</li>
+<li>Add the newborn offspring to the <code>TD_Birth</code>.</li>
+</ol></li>
+</ol></li>
+<li>If <code>year</code> is less than <code>T</code>, go to step 1.</li>
+<li>Return the <code>TD</code>, <code>TD_Birth</code>, <code>TD_Death</code>.</li>
+</ol></li>
 </ul>
 </section>
 <section id="example" class="level2" data-number="3.1">
@@ -839,91 +876,121 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb1-81"><a href="#cb1-81" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`age`</span> - Age at the end of the simulation.</span>
 <span id="cb1-82"><a href="#cb1-82" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`age_death`</span> - Age at death.</span>
 <span id="cb1-83"><a href="#cb1-83" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`marriage`</span> - IDs of marriage partners.</span>
-<span id="cb1-84"><a href="#cb1-84" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-85"><a href="#cb1-85" aria-hidden="true" tabindex="-1"></a><span class="fu">## Example</span></span>
-<span id="cb1-86"><a href="#cb1-86" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-87"><a href="#cb1-87" aria-hidden="true" tabindex="-1"></a>To illustrate how the algorithm works, let's assume the following parameter values:</span>
-<span id="cb1-88"><a href="#cb1-88" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-89"><a href="#cb1-89" aria-hidden="true" tabindex="-1"></a>::: {.columns}</span>
-<span id="cb1-90"><a href="#cb1-90" aria-hidden="true" tabindex="-1"></a>::: {.column width="33%"}</span>
-<span id="cb1-91"><a href="#cb1-91" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`N`</span> = 10</span>
-<span id="cb1-92"><a href="#cb1-92" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`t_F`</span> = 19</span>
-<span id="cb1-93"><a href="#cb1-93" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`q_F`</span> = 39</span>
-<span id="cb1-94"><a href="#cb1-94" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`t_M`</span> = 21</span>
-<span id="cb1-95"><a href="#cb1-95" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`q_M`</span> = 41</span>
-<span id="cb1-96"><a href="#cb1-96" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb1-97"><a href="#cb1-97" aria-hidden="true" tabindex="-1"></a>::: {.column width="33%"}</span>
-<span id="cb1-98"><a href="#cb1-98" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`mu_F`</span> = 80</span>
-<span id="cb1-99"><a href="#cb1-99" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`s2_F`</span> = 5</span>
-<span id="cb1-100"><a href="#cb1-100" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`mu_M`</span> = 75</span>
-<span id="cb1-101"><a href="#cb1-101" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`s2_M`</span> = 7</span>
-<span id="cb1-102"><a href="#cb1-102" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`lambda_par`</span> = 1</span>
-<span id="cb1-103"><a href="#cb1-103" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb1-104"><a href="#cb1-104" aria-hidden="true" tabindex="-1"></a>::: {.column width="33%"}</span>
-<span id="cb1-105"><a href="#cb1-105" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`d_B`</span> = 1</span>
-<span id="cb1-106"><a href="#cb1-106" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`K_G`</span> = 3</span>
-<span id="cb1-107"><a href="#cb1-107" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`p_D`</span> = 0.9</span>
-<span id="cb1-108"><a href="#cb1-108" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`p_P`</span> = 0.25</span>
-<span id="cb1-109"><a href="#cb1-109" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`T`</span> = 160</span>
-<span id="cb1-110"><a href="#cb1-110" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb1-111"><a href="#cb1-111" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-84"><a href="#cb1-84" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`marriage_year`</span> - Year of marriage.</span>
+<span id="cb1-85"><a href="#cb1-85" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`marriage_related`</span> - Indicator of related marriage.</span>
+<span id="cb1-86"><a href="#cb1-86" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb1-87"><a href="#cb1-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-88"><a href="#cb1-88" aria-hidden="true" tabindex="-1"></a><span class="fu">## Algorithm steps {.unnumbered}</span></span>
+<span id="cb1-89"><a href="#cb1-89" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-90"><a href="#cb1-90" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Initiation**</span>
+<span id="cb1-91"><a href="#cb1-91" aria-hidden="true" tabindex="-1"></a><span class="ss">  1. </span>Initialize tables <span class="in">`TD`</span>, <span class="in">`TD_Birth`</span>, <span class="in">`TD_Death`</span> with columns <span class="in">`id`</span>, <span class="in">`sex`</span>, <span class="in">`parents`</span>, <span class="in">`year_birth`</span>, <span class="in">`defect`</span>, <span class="in">`age`</span>, <span class="in">`age_death`</span>, <span class="in">`marriage`</span>, <span class="in">`marriage_year`</span>, <span class="in">`marriage_related`</span>.</span>
+<span id="cb1-92"><a href="#cb1-92" aria-hidden="true" tabindex="-1"></a><span class="ss">  2. </span>Generate a population of size <span class="in">`N`</span> consisting of an equal number of men and women aged from 0 to 10 years. Save the population to the <span class="in">`TD`</span>.</span>
+<span id="cb1-93"><a href="#cb1-93" aria-hidden="true" tabindex="-1"></a><span class="ss">  3. </span>Set <span class="in">`year`</span> to the maximum age in the population.</span>
+<span id="cb1-94"><a href="#cb1-94" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-95"><a href="#cb1-95" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Loop** &lt;br/&gt;</span>
+<span id="cb1-96"><a href="#cb1-96" aria-hidden="true" tabindex="-1"></a><span class="ss">  1. </span>Increase <span class="in">`year`</span> by 1.</span>
+<span id="cb1-97"><a href="#cb1-97" aria-hidden="true" tabindex="-1"></a><span class="ss">  2. </span>Update the age of each individual in the <span class="in">`TD`</span>.</span>
+<span id="cb1-98"><a href="#cb1-98" aria-hidden="true" tabindex="-1"></a><span class="ss">  3. </span>If an individual has reached the age of death, save them to the <span class="in">`TD_Death`</span> and remove them from the <span class="in">`TD`</span>.</span>
+<span id="cb1-99"><a href="#cb1-99" aria-hidden="true" tabindex="-1"></a><span class="ss">  4. </span>If the birth year in the <span class="in">`TD_Birth`</span> is equal to <span class="in">`year`</span>, add the newborn individuals to the <span class="in">`TD`</span> and remove them from the <span class="in">`TD_Birth`</span>.</span>
+<span id="cb1-100"><a href="#cb1-100" aria-hidden="true" tabindex="-1"></a><span class="ss">  5. </span>Check if new marriages can be formed. If not, go to step 1.</span>
+<span id="cb1-101"><a href="#cb1-101" aria-hidden="true" tabindex="-1"></a><span class="ss">  6. </span>Form new marriages and save them to the <span class="in">`TD`</span>. For each newly formed pair, save <span class="in">`marriage_year`</span> as the current year.</span>
+<span id="cb1-102"><a href="#cb1-102" aria-hidden="true" tabindex="-1"></a><span class="ss">  7. </span>For each newly formed pair:</span>
+<span id="cb1-103"><a href="#cb1-103" aria-hidden="true" tabindex="-1"></a><span class="ss">      1. </span>Check if the pair is related up to <span class="in">`K_G`</span> generations back. If so, set <span class="in">`marriage_related`</span> to <span class="in">`True`</span>, otherwise set it to <span class="in">`False`</span>.</span>
+<span id="cb1-104"><a href="#cb1-104" aria-hidden="true" tabindex="-1"></a><span class="ss">      2. </span>Draw the number of offspring from a Poisson distribution with parameter <span class="in">`lambda_par`</span>.</span>
+<span id="cb1-105"><a href="#cb1-105" aria-hidden="true" tabindex="-1"></a><span class="ss">      3. </span>For each offspring:</span>
+<span id="cb1-106"><a href="#cb1-106" aria-hidden="true" tabindex="-1"></a><span class="ss">          1. </span>Draw the year of birth considering the interval between births <span class="in">`d_B`</span>.</span>
+<span id="cb1-107"><a href="#cb1-107" aria-hidden="true" tabindex="-1"></a><span class="ss">          2. </span>Draw the year of death according to the normal distribution of lifespan for the given sex (female: <span class="in">`mu_F, s2_F`</span>, male: <span class="in">`mu_M, s2_M`</span>).</span>
+<span id="cb1-108"><a href="#cb1-108" aria-hidden="true" tabindex="-1"></a><span class="ss">          3. </span>Draw the occurrence of a genetic defect with probability <span class="in">`p_D`</span> for offspring from related parents and <span class="in">`p_P`</span> for offspring from a parent with a genetic defect.</span>
+<span id="cb1-109"><a href="#cb1-109" aria-hidden="true" tabindex="-1"></a><span class="ss">          4. </span>Add the newborn offspring to the <span class="in">`TD_Birth`</span>.</span>
+<span id="cb1-110"><a href="#cb1-110" aria-hidden="true" tabindex="-1"></a><span class="ss">  8. </span>If <span class="in">`year`</span> is less than <span class="in">`T`</span>, go to step 1.</span>
+<span id="cb1-111"><a href="#cb1-111" aria-hidden="true" tabindex="-1"></a><span class="ss">  9. </span>Return the <span class="in">`TD`</span>, <span class="in">`TD_Birth`</span>, <span class="in">`TD_Death`</span>.</span>
 <span id="cb1-112"><a href="#cb1-112" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-113"><a href="#cb1-113" aria-hidden="true" tabindex="-1"></a>The following chart presents the subsequent years in the simulation, with the adopted symbolism:</span>
-<span id="cb1-114"><a href="#cb1-114" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-115"><a href="#cb1-115" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Women and men without genetic defects:</span>
-<span id="cb1-116"><a href="#cb1-116" aria-hidden="true" tabindex="-1"></a>&lt;svg width="50" height="30"&gt;</span>
-<span id="cb1-117"><a href="#cb1-117" aria-hidden="true" tabindex="-1"></a>  &lt;g transform="translate(10,10)"&gt;</span>
-<span id="cb1-118"><a href="#cb1-118" aria-hidden="true" tabindex="-1"></a>    &lt;path d="M0,-10A10,10 0 1,1 0,10A10,10 0 1,1 0,-10" fill="#FFE0BD"&gt;&lt;/path&gt;</span>
-<span id="cb1-119"><a href="#cb1-119" aria-hidden="true" tabindex="-1"></a>    &lt;path d="M 0,-12.408065 10.745699,6.2040324 -10.745699,6.2040324 Z" fill="#FFE0BD" transform="translate(30,2)"&gt;&lt;/path&gt;</span>
-<span id="cb1-120"><a href="#cb1-120" aria-hidden="true" tabindex="-1"></a>  &lt;/g&gt;</span>
-<span id="cb1-121"><a href="#cb1-121" aria-hidden="true" tabindex="-1"></a>&lt;/svg&gt;</span>
-<span id="cb1-122"><a href="#cb1-122" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Women and men with genetic defects:</span>
-<span id="cb1-123"><a href="#cb1-123" aria-hidden="true" tabindex="-1"></a>&lt;svg width="50" height="30"&gt;</span>
-<span id="cb1-124"><a href="#cb1-124" aria-hidden="true" tabindex="-1"></a>  &lt;g transform="translate(10,10)"&gt;</span>
-<span id="cb1-125"><a href="#cb1-125" aria-hidden="true" tabindex="-1"></a>    &lt;path d="M0,-10A10,10 0 1,1 0,10A10,10 0 1,1 0,-10" fill="#D3D3D3"&gt;&lt;/path&gt;</span>
-<span id="cb1-126"><a href="#cb1-126" aria-hidden="true" tabindex="-1"></a>    &lt;path d="M 0,-12.408065 10.745699,6.2040324 -10.745699,6.2040324 Z" fill="#D3D3D3" transform="translate(30,2)"&gt;&lt;/path&gt;</span>
-<span id="cb1-127"><a href="#cb1-127" aria-hidden="true" tabindex="-1"></a>  &lt;/g&gt;</span>
-<span id="cb1-128"><a href="#cb1-128" aria-hidden="true" tabindex="-1"></a>&lt;/svg&gt;</span>
-<span id="cb1-129"><a href="#cb1-129" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Deceased women and men:</span>
-<span id="cb1-130"><a href="#cb1-130" aria-hidden="true" tabindex="-1"></a>&lt;svg width="50" height="30"&gt;</span>
-<span id="cb1-131"><a href="#cb1-131" aria-hidden="true" tabindex="-1"></a>  &lt;g transform="translate(10,10)"&gt;</span>
-<span id="cb1-132"><a href="#cb1-132" aria-hidden="true" tabindex="-1"></a>    &lt;path d="M0,-10A10,10 0 1,1 0,10A10,10 0 1,1 0,-10" fill="#FFE0BD" stroke="#000000" stroke-width=0.8&gt;&lt;/path&gt;</span>
-<span id="cb1-133"><a href="#cb1-133" aria-hidden="true" tabindex="-1"></a>    &lt;path d="M 0,-12.408065 10.745699,6.2040324 -10.745699,6.2040324 Z" fill="#FFE0BD"  stroke="#000000" stroke-width=0.8 transform="translate(30,2)"&gt;&lt;/path&gt;</span>
-<span id="cb1-134"><a href="#cb1-134" aria-hidden="true" tabindex="-1"></a>  &lt;/g&gt;</span>
-<span id="cb1-135"><a href="#cb1-135" aria-hidden="true" tabindex="-1"></a>&lt;/svg&gt;</span>
-<span id="cb1-136"><a href="#cb1-136" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Unrelated pair:</span>
-<span id="cb1-137"><a href="#cb1-137" aria-hidden="true" tabindex="-1"></a>&lt;svg width="50" height="30"&gt;</span>
-<span id="cb1-138"><a href="#cb1-138" aria-hidden="true" tabindex="-1"></a>  &lt;g transform="translate(10,10)"&gt;</span>
-<span id="cb1-139"><a href="#cb1-139" aria-hidden="true" tabindex="-1"></a>    &lt;path d="M -7.0710678118654755,-7.0710678118654755 h 14.142135623730951 v 14.142135623730951 h -14.142135623730951Z" fill="orange"&gt;&lt;/path&gt;</span>
-<span id="cb1-140"><a href="#cb1-140" aria-hidden="true" tabindex="-1"></a>  &lt;/g&gt;</span>
-<span id="cb1-141"><a href="#cb1-141" aria-hidden="true" tabindex="-1"></a>&lt;/svg&gt;</span>
-<span id="cb1-142"><a href="#cb1-142" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Related pair:</span>
-<span id="cb1-143"><a href="#cb1-143" aria-hidden="true" tabindex="-1"></a>&lt;svg width="50" height="30"&gt;</span>
-<span id="cb1-144"><a href="#cb1-144" aria-hidden="true" tabindex="-1"></a>  &lt;g transform="translate(10,10)"&gt;</span>
-<span id="cb1-145"><a href="#cb1-145" aria-hidden="true" tabindex="-1"></a>    &lt;path d="M -7.0710678118654755,-7.0710678118654755 h 14.142135623730951 v 14.142135623730951 h -14.142135623730951Z" fill="#D3D3D3"&gt;&lt;/path&gt;</span>
-<span id="cb1-146"><a href="#cb1-146" aria-hidden="true" tabindex="-1"></a>  &lt;/g&gt;</span>
-<span id="cb1-147"><a href="#cb1-147" aria-hidden="true" tabindex="-1"></a>&lt;/svg&gt;</span>
-<span id="cb1-148"><a href="#cb1-148" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Indication of individuals forming a pair:</span>
-<span id="cb1-149"><a href="#cb1-149" aria-hidden="true" tabindex="-1"></a>&lt;svg width="50" height="30"&gt;</span>
-<span id="cb1-150"><a href="#cb1-150" aria-hidden="true" tabindex="-1"></a>&lt;line x1="5" y1="10" x2="45" y2="10" stroke="orange" stroke-width="3" /&gt;</span>
+<span id="cb1-113"><a href="#cb1-113" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-114"><a href="#cb1-114" aria-hidden="true" tabindex="-1"></a><span class="fu">## Example</span></span>
+<span id="cb1-115"><a href="#cb1-115" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-116"><a href="#cb1-116" aria-hidden="true" tabindex="-1"></a>To illustrate how the algorithm works, let's assume the following parameter values:</span>
+<span id="cb1-117"><a href="#cb1-117" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-118"><a href="#cb1-118" aria-hidden="true" tabindex="-1"></a>::: {.columns}</span>
+<span id="cb1-119"><a href="#cb1-119" aria-hidden="true" tabindex="-1"></a>::: {.column width="33%"}</span>
+<span id="cb1-120"><a href="#cb1-120" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`N`</span> = 10</span>
+<span id="cb1-121"><a href="#cb1-121" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`t_F`</span> = 19</span>
+<span id="cb1-122"><a href="#cb1-122" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`q_F`</span> = 39</span>
+<span id="cb1-123"><a href="#cb1-123" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`t_M`</span> = 21</span>
+<span id="cb1-124"><a href="#cb1-124" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`q_M`</span> = 41</span>
+<span id="cb1-125"><a href="#cb1-125" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-126"><a href="#cb1-126" aria-hidden="true" tabindex="-1"></a>::: {.column width="33%"}</span>
+<span id="cb1-127"><a href="#cb1-127" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`mu_F`</span> = 80</span>
+<span id="cb1-128"><a href="#cb1-128" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`s2_F`</span> = 5</span>
+<span id="cb1-129"><a href="#cb1-129" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`mu_M`</span> = 75</span>
+<span id="cb1-130"><a href="#cb1-130" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`s2_M`</span> = 7</span>
+<span id="cb1-131"><a href="#cb1-131" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`lambda_par`</span> = 1</span>
+<span id="cb1-132"><a href="#cb1-132" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-133"><a href="#cb1-133" aria-hidden="true" tabindex="-1"></a>::: {.column width="33%"}</span>
+<span id="cb1-134"><a href="#cb1-134" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`d_B`</span> = 1</span>
+<span id="cb1-135"><a href="#cb1-135" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`K_G`</span> = 3</span>
+<span id="cb1-136"><a href="#cb1-136" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`p_D`</span> = 0.9</span>
+<span id="cb1-137"><a href="#cb1-137" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`p_P`</span> = 0.25</span>
+<span id="cb1-138"><a href="#cb1-138" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`T`</span> = 160</span>
+<span id="cb1-139"><a href="#cb1-139" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-140"><a href="#cb1-140" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-141"><a href="#cb1-141" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-142"><a href="#cb1-142" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-143"><a href="#cb1-143" aria-hidden="true" tabindex="-1"></a>The following chart presents the subsequent years in the simulation, with the adopted symbolism:</span>
+<span id="cb1-144"><a href="#cb1-144" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-145"><a href="#cb1-145" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Women and men without genetic defects:</span>
+<span id="cb1-146"><a href="#cb1-146" aria-hidden="true" tabindex="-1"></a>&lt;svg width="50" height="30"&gt;</span>
+<span id="cb1-147"><a href="#cb1-147" aria-hidden="true" tabindex="-1"></a>  &lt;g transform="translate(10,10)"&gt;</span>
+<span id="cb1-148"><a href="#cb1-148" aria-hidden="true" tabindex="-1"></a>    &lt;path d="M0,-10A10,10 0 1,1 0,10A10,10 0 1,1 0,-10" fill="#FFE0BD"&gt;&lt;/path&gt;</span>
+<span id="cb1-149"><a href="#cb1-149" aria-hidden="true" tabindex="-1"></a>    &lt;path d="M 0,-12.408065 10.745699,6.2040324 -10.745699,6.2040324 Z" fill="#FFE0BD" transform="translate(30,2)"&gt;&lt;/path&gt;</span>
+<span id="cb1-150"><a href="#cb1-150" aria-hidden="true" tabindex="-1"></a>  &lt;/g&gt;</span>
 <span id="cb1-151"><a href="#cb1-151" aria-hidden="true" tabindex="-1"></a>&lt;/svg&gt;</span>
-<span id="cb1-152"><a href="#cb1-152" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Offspring of a married couple:</span>
+<span id="cb1-152"><a href="#cb1-152" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Women and men with genetic defects:</span>
 <span id="cb1-153"><a href="#cb1-153" aria-hidden="true" tabindex="-1"></a>&lt;svg width="50" height="30"&gt;</span>
-<span id="cb1-154"><a href="#cb1-154" aria-hidden="true" tabindex="-1"></a>&lt;line x1="5" y1="10" x2="45" y2="10" stroke="red" stroke-width="1" /&gt;</span>
-<span id="cb1-155"><a href="#cb1-155" aria-hidden="true" tabindex="-1"></a>&lt;/svg&gt;</span>
-<span id="cb1-156"><a href="#cb1-156" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-157"><a href="#cb1-157" aria-hidden="true" tabindex="-1"></a>Use the 'previous'/'next' buttons to browse through the subsequent years of the simulation.</span>
-<span id="cb1-158"><a href="#cb1-158" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-159"><a href="#cb1-159" aria-hidden="true" tabindex="-1"></a>::: {#graf}</span>
-<span id="cb1-160"><a href="#cb1-160" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb1-161"><a href="#cb1-161" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-162"><a href="#cb1-162" aria-hidden="true" tabindex="-1"></a>&lt;button id="prev-button"&gt;Previous&lt;/button&gt;</span>
-<span id="cb1-163"><a href="#cb1-163" aria-hidden="true" tabindex="-1"></a>&lt;button id="next-button"&gt;Next&lt;/button&gt;</span>
-<span id="cb1-164"><a href="#cb1-164" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-165"><a href="#cb1-165" aria-hidden="true" tabindex="-1"></a>The first pair (id: 14; 15), which is related, appears in year 51. The first offspring (id: 31) from a related pair (id: 17; 18) is born in year 59. The first person (female, id: 9) dies in year 72.</span>
-<span id="cb1-166"><a href="#cb1-166" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-167"><a href="#cb1-167" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-168"><a href="#cb1-168" aria-hidden="true" tabindex="-1"></a><span class="fu"># Bibliraphy</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-154"><a href="#cb1-154" aria-hidden="true" tabindex="-1"></a>  &lt;g transform="translate(10,10)"&gt;</span>
+<span id="cb1-155"><a href="#cb1-155" aria-hidden="true" tabindex="-1"></a>    &lt;path d="M0,-10A10,10 0 1,1 0,10A10,10 0 1,1 0,-10" fill="#D3D3D3"&gt;&lt;/path&gt;</span>
+<span id="cb1-156"><a href="#cb1-156" aria-hidden="true" tabindex="-1"></a>    &lt;path d="M 0,-12.408065 10.745699,6.2040324 -10.745699,6.2040324 Z" fill="#D3D3D3" transform="translate(30,2)"&gt;&lt;/path&gt;</span>
+<span id="cb1-157"><a href="#cb1-157" aria-hidden="true" tabindex="-1"></a>  &lt;/g&gt;</span>
+<span id="cb1-158"><a href="#cb1-158" aria-hidden="true" tabindex="-1"></a>&lt;/svg&gt;</span>
+<span id="cb1-159"><a href="#cb1-159" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Deceased women and men:</span>
+<span id="cb1-160"><a href="#cb1-160" aria-hidden="true" tabindex="-1"></a>&lt;svg width="50" height="30"&gt;</span>
+<span id="cb1-161"><a href="#cb1-161" aria-hidden="true" tabindex="-1"></a>  &lt;g transform="translate(10,10)"&gt;</span>
+<span id="cb1-162"><a href="#cb1-162" aria-hidden="true" tabindex="-1"></a>    &lt;path d="M0,-10A10,10 0 1,1 0,10A10,10 0 1,1 0,-10" fill="#FFE0BD" stroke="#000000" stroke-width=0.8&gt;&lt;/path&gt;</span>
+<span id="cb1-163"><a href="#cb1-163" aria-hidden="true" tabindex="-1"></a>    &lt;path d="M 0,-12.408065 10.745699,6.2040324 -10.745699,6.2040324 Z" fill="#FFE0BD"  stroke="#000000" stroke-width=0.8 transform="translate(30,2)"&gt;&lt;/path&gt;</span>
+<span id="cb1-164"><a href="#cb1-164" aria-hidden="true" tabindex="-1"></a>  &lt;/g&gt;</span>
+<span id="cb1-165"><a href="#cb1-165" aria-hidden="true" tabindex="-1"></a>&lt;/svg&gt;</span>
+<span id="cb1-166"><a href="#cb1-166" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Unrelated pair:</span>
+<span id="cb1-167"><a href="#cb1-167" aria-hidden="true" tabindex="-1"></a>&lt;svg width="50" height="30"&gt;</span>
+<span id="cb1-168"><a href="#cb1-168" aria-hidden="true" tabindex="-1"></a>  &lt;g transform="translate(10,10)"&gt;</span>
+<span id="cb1-169"><a href="#cb1-169" aria-hidden="true" tabindex="-1"></a>    &lt;path d="M -7.0710678118654755,-7.0710678118654755 h 14.142135623730951 v 14.142135623730951 h -14.142135623730951Z" fill="orange"&gt;&lt;/path&gt;</span>
+<span id="cb1-170"><a href="#cb1-170" aria-hidden="true" tabindex="-1"></a>  &lt;/g&gt;</span>
+<span id="cb1-171"><a href="#cb1-171" aria-hidden="true" tabindex="-1"></a>&lt;/svg&gt;</span>
+<span id="cb1-172"><a href="#cb1-172" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Related pair:</span>
+<span id="cb1-173"><a href="#cb1-173" aria-hidden="true" tabindex="-1"></a>&lt;svg width="50" height="30"&gt;</span>
+<span id="cb1-174"><a href="#cb1-174" aria-hidden="true" tabindex="-1"></a>  &lt;g transform="translate(10,10)"&gt;</span>
+<span id="cb1-175"><a href="#cb1-175" aria-hidden="true" tabindex="-1"></a>    &lt;path d="M -7.0710678118654755,-7.0710678118654755 h 14.142135623730951 v 14.142135623730951 h -14.142135623730951Z" fill="#D3D3D3"&gt;&lt;/path&gt;</span>
+<span id="cb1-176"><a href="#cb1-176" aria-hidden="true" tabindex="-1"></a>  &lt;/g&gt;</span>
+<span id="cb1-177"><a href="#cb1-177" aria-hidden="true" tabindex="-1"></a>&lt;/svg&gt;</span>
+<span id="cb1-178"><a href="#cb1-178" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Indication of individuals forming a pair:</span>
+<span id="cb1-179"><a href="#cb1-179" aria-hidden="true" tabindex="-1"></a>&lt;svg width="50" height="30"&gt;</span>
+<span id="cb1-180"><a href="#cb1-180" aria-hidden="true" tabindex="-1"></a>&lt;line x1="5" y1="10" x2="45" y2="10" stroke="orange" stroke-width="3" /&gt;</span>
+<span id="cb1-181"><a href="#cb1-181" aria-hidden="true" tabindex="-1"></a>&lt;/svg&gt;</span>
+<span id="cb1-182"><a href="#cb1-182" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Offspring of a married couple:</span>
+<span id="cb1-183"><a href="#cb1-183" aria-hidden="true" tabindex="-1"></a>&lt;svg width="50" height="30"&gt;</span>
+<span id="cb1-184"><a href="#cb1-184" aria-hidden="true" tabindex="-1"></a>&lt;line x1="5" y1="10" x2="45" y2="10" stroke="red" stroke-width="1" /&gt;</span>
+<span id="cb1-185"><a href="#cb1-185" aria-hidden="true" tabindex="-1"></a>&lt;/svg&gt;</span>
+<span id="cb1-186"><a href="#cb1-186" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-187"><a href="#cb1-187" aria-hidden="true" tabindex="-1"></a>Use the 'previous'/'next' buttons to browse through the subsequent years of the simulation.</span>
+<span id="cb1-188"><a href="#cb1-188" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-189"><a href="#cb1-189" aria-hidden="true" tabindex="-1"></a>::: {#graf}</span>
+<span id="cb1-190"><a href="#cb1-190" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-191"><a href="#cb1-191" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-192"><a href="#cb1-192" aria-hidden="true" tabindex="-1"></a>&lt;button id="prev-button"&gt;Previous&lt;/button&gt;</span>
+<span id="cb1-193"><a href="#cb1-193" aria-hidden="true" tabindex="-1"></a>&lt;button id="next-button"&gt;Next&lt;/button&gt;</span>
+<span id="cb1-194"><a href="#cb1-194" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-195"><a href="#cb1-195" aria-hidden="true" tabindex="-1"></a>The first pair (id: 14; 15), which is related, appears in year 51. The first offspring (id: 31) from a related pair (id: 17; 18) is born in year 59. The first person (female, id: 9) dies in year 72.</span>
+<span id="cb1-196"><a href="#cb1-196" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-197"><a href="#cb1-197" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-198"><a href="#cb1-198" aria-hidden="true" tabindex="-1"></a><span class="fu"># Bibliraphy</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 

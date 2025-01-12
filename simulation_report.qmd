@@ -81,6 +81,35 @@ The simulation results will be organized into a table `TD` with these columns:
 -   `age` - Age at the end of the simulation.
 -   `age_death` - Age at death.
 -   `marriage` - IDs of marriage partners.
+-   `marriage_year` - Year of marriage.
+-   `marriage_related` - Indicator of related marriage.
+  
+
+## Algorithm steps {.unnumbered}
+
+- **Initiation**
+  1. Initialize tables `TD`, `TD_Birth`, `TD_Death` with columns `id`, `sex`, `parents`, `year_birth`, `defect`, `age`, `age_death`, `marriage`, `marriage_year`, `marriage_related`.
+  2. Generate a population of size `N` consisting of an equal number of men and women aged from 0 to 10 years. Save the population to the `TD`.
+  3. Set `year` to the maximum age in the population.
+
+- **Loop** <br/>
+  1. Increase `year` by 1.
+  2. Update the age of each individual in the `TD`.
+  3. If an individual has reached the age of death, save them to the `TD_Death` and remove them from the `TD`.
+  4. If the birth year in the `TD_Birth` is equal to `year`, add the newborn individuals to the `TD` and remove them from the `TD_Birth`.
+  5. Check if new marriages can be formed. If not, go to step 1.
+  6. Form new marriages and save them to the `TD`. For each newly formed pair, save `marriage_year` as the current year.
+  7. For each newly formed pair:
+      1. Check if the pair is related up to `K_G` generations back. If so, set `marriage_related` to `True`, otherwise set it to `False`.
+      2. Draw the number of offspring from a Poisson distribution with parameter `lambda_par`.
+      3. For each offspring:
+          1. Draw the year of birth considering the interval between births `d_B`.
+          2. Draw the year of death according to the normal distribution of lifespan for the given sex (female: `mu_F, s2_F`, male: `mu_M, s2_M`).
+          3. Draw the occurrence of a genetic defect with probability `p_D` for offspring from related parents and `p_P` for offspring from a parent with a genetic defect.
+          4. Add the newborn offspring to the `TD_Birth`.
+  8. If `year` is less than `T`, go to step 1.
+  9. Return the `TD`, `TD_Birth`, `TD_Death`.
+
 
 ## Example
 
@@ -109,6 +138,7 @@ To illustrate how the algorithm works, let's assume the following parameter valu
 - `T` = 160
 :::
 :::
+
 
 The following chart presents the subsequent years in the simulation, with the adopted symbolism:
 
