@@ -12,6 +12,12 @@ format:
     theme: cosmo
     bibliography: references.bib   
     bibliographystyle: apa 
+    include-in-header:
+      - text: |
+            <script src="https://d3js.org/d3.v6.min.js"></script>
+            <script src="img/javascript/shared.js""></script>
+            <script src="img/javascript/script.js""></script>            
+
 editor: visual
 ---
 
@@ -31,18 +37,135 @@ The goal of this project is to simulate the dynamics of an isolated tribe, where
 
 # Model Description
 
-1.  **Size of the tribe**: The tribe starts with a fixed even number $N$ of individuals in the initial generation. The number of women and men is the same, every is of legal age, but not older then 10 year from reaching legal age. The tribe is isolated from other tribes.
+1.  **Size of the tribe**: The tribe starts with a fixed even number $N$ of individuals in the initial generation. The number of women and men is the same. The age of all of them does not exceed 10 years. The tribe is isolated from other tribes.
 2.  **Human age**: Women reach a random age consistent with a normal distribution $\mathcal{N}(\mu_F, \sigma^2_F)$, similary men reach a random age consistent with a normal distribution $\mathcal{N}(\mu_M, \sigma^2_M)$. The parameters $\mu_F, \sigma^2_F, \mu_M, \sigma^2_M$ are determined by the user.
 3.  **Marriage**: Women, upon reaching age $t_F$, and men, upon reaching age $t_M$, form lifelong pairs. Pairing is random. The parameters $t_F$ and $t_M$ are determined by the user.
 4.  **Offspring**:
-    1.  **Reproductive age**: A woman can become pregnant up to age $t_F$, and a man can father a child up to age $t_M$. The parameters $t_F$ and $t_M$ are determined by the user.
+    1.  **Reproductive age**: A woman can become pregnant up to age $q_F$, and a man can father a child up to age $q_M$. The parameters $q_F$ and $q_M$ are determined by the user.
     2.  **Possibility**: Each pair has the chance to have offspring during their reproductive years.
     3.  **Number**: The number of offspring is determined by a Poisson distribution with parameter $\lambda$. The parameter $\lambda$ is determined by the user.
-    4.  **Birth**: The moment of birth for a married couple is random, with the additional assumption that the interval between births cannot be less than $d_B$. The parameter $d_B$ is determined by the user.
+    4.  **Birth**: The moment of birth for a married couple is random, with the additional assumption that the interval between births cannot be less than $d_B$. The parameter $d_B$ is determined by the user. 
+    5.  **Pregnacy**: Single.
 5.  **Inbred**:
     1.  **Kinship**: A pair is deemed to be related if they share a common ancestor within the past $K_G​$ generations. The parameter $K_G$ is determined by the user.
     2.  **Genetic defect**: A genetic defect will occur with a probability of $p_D$​ when a child is born to related parents. A person with a genetic defect passes it on to their offspring with a probability of $p_P$. The parameters $p_D$, $p_P$ are determined by the user.
 6.  **Time of simulation**: The simulation time $T$ is defined by the user and must be long enough to encompass multiple generations.
 7.  **We observe**: The simulation is intended to determine the empirical distribution of the number of individuals with a genetic defect.
+
+# Algorithm
+
+## Input data {.unnumbered}
+
+-   `N` - The initial number of individuals in the tribe.
+-   `t_F` - Age of maturity for women.
+-   `t_M` - Age of maturity for men.
+-   `q_F` - Maximum age for female fertility.
+-   `q_M` - Maximum age for male fertility.
+-   `mu_F, s2_F` - Parameters of the normal distribution describing women's mortality age.
+-   `mu_M, s2_M` - Parameters of the normal distribution describing men's mortality age.
+-   `lambda_par` - The parameter of the Poisson distribution determining the number of offspring.
+-   `d_B` - Minimum time between pregnancies for each pair.
+-   `K_G` - Number of generations back to consider kinship.
+-   `p_D` - Probability of a genetic defect in offspring of related parents.
+-   `p_P` - Probability of passing on a genetic defect to offspring.
+-   `T` - Simulation time.
+
+## Output data {.unnumbered}
+
+The simulation results will be organized into a table `TD` with these columns:
+
+-   `id` - Individual identifier.
+-   `sex` - Sex.
+-   `parents` - IDs of parents.
+-   `year_birth` - Year of birth.
+-   `defect` - Presence of a genetic defect.
+-   `age` - Age at the end of the simulation.
+-   `age_death` - Age at death.
+-   `marriage` - IDs of marriage partners.
+-   `marriage_year` - Year of marriage.
+-   `marriage_related` - Indicator of related marriage.
+
+## Algorithm steps {.unnumbered}
+
+-   **Initiation**
+    1.  Initialize tables `TD`, `TD_Birth`, `TD_Death` with columns `id`, `sex`, `parents`, `year_birth`, `defect`, `age`, `age_death`, `marriage`, `marriage_year`, `marriage_related`.
+    2.  Generate a population of size `N` consisting of an equal number of men and women aged from 0 to 10 years. Save the population to the `TD`.
+    3.  Set `year` to the maximum age in the population.
+-   **Loop** <br/>
+    1.  Increase `year` by 1.
+    2.  Update the age of each individual in the `TD`.
+    3.  If an individual has reached the age of death, save them to the `TD_Death` and remove them from the `TD`.
+    4.  If the birth year in the `TD_Birth` is equal to `year`, add the newborn individuals to the `TD` and remove them from the `TD_Birth`.
+    5.  Check if new marriages can be formed. If not, go to step 1.
+    6.  Form new marriages and save them to the `TD`. For each newly formed pair, save `marriage_year` as the current year.
+    7.  For each newly formed pair:
+        1.  Check if the pair is related up to `K_G` generations back. If so, set `marriage_related` to `True`, otherwise set it to `False`.
+        2.  Draw the number of offspring from a Poisson distribution with parameter `lambda_par`, provided that both partners are in childbearing age and a break between births is maintained.
+        3.  For each offspring:
+            1.  Draw the year of birth considering the interval between births `d_B`.
+            2.  Draw the year of death according to the normal distribution of lifespan for the given sex (female: `mu_F, s2_F`, male: `mu_M, s2_M`).
+            3.  Draw the occurrence of a genetic defect with probability `p_D` for offspring from related parents and `p_P` for offspring from a parent with a genetic defect.
+            4.  Add the newborn offspring to the `TD_Birth`.
+    8.  If `year` is less than `T`, go to step 1.
+    9.  Return the `TD`, `TD_Birth`, `TD_Death`.
+
+## Example
+
+To illustrate how the algorithm works, let's assume the following parameter values:
+
+::: columns
+::: {.column width="33%"}
+-   `N` = 10
+-   `t_F` = 19
+-   `q_F` = 39
+-   `t_M` = 21
+-   `q_M` = 41
+:::
+
+::: {.column width="33%"}
+-   `mu_F` = 80
+-   `s2_F` = 5
+-   `mu_M` = 75
+-   `s2_M` = 7
+-   `lambda_par` = 1
+:::
+
+::: {.column width="33%"}
+-   `d_B` = 1
+-   `K_G` = 3
+-   `p_D` = 0.9
+-   `p_P` = 0.25
+-   `T` = 160
+:::
+:::
+
+The following chart presents the subsequent years in the simulation, with the adopted symbolism:
+
+-   Women and men without genetic defects: <svg width="50" height="30"> <g transform="translate(10,10)"> <path d="M0,-10A10,10 0 1,1 0,10A10,10 0 1,1 0,-10" fill="#FFE0BD"></path> <path d="M 0,-12.408065 10.745699,6.2040324 -10.745699,6.2040324 Z" fill="#FFE0BD" transform="translate(30,2)"></path> </g> </svg>
+-   Women and men with genetic defects: <svg width="50" height="30"> <g transform="translate(10,10)"> <path d="M0,-10A10,10 0 1,1 0,10A10,10 0 1,1 0,-10" fill="#D3D3D3"></path> <path d="M 0,-12.408065 10.745699,6.2040324 -10.745699,6.2040324 Z" fill="#D3D3D3" transform="translate(30,2)"></path> </g> </svg>
+-   Deceased women and men: <svg width="50" height="30"> <g transform="translate(10,10)"> <path d="M0,-10A10,10 0 1,1 0,10A10,10 0 1,1 0,-10" fill="#FFE0BD" stroke="#000000" stroke-width=0.8></path> <path d="M 0,-12.408065 10.745699,6.2040324 -10.745699,6.2040324 Z" fill="#FFE0BD"  stroke="#000000" stroke-width=0.8 transform="translate(30,2)"></path> </g> </svg>
+-   Unrelated pair: <svg width="50" height="30"> <g transform="translate(10,10)"> <path d="M -7.0710678118654755,-7.0710678118654755 h 14.142135623730951 v 14.142135623730951 h -14.142135623730951Z" fill="orange"></path> </g> </svg>
+-   Related pair: <svg width="50" height="30"> <g transform="translate(10,10)"> <path d="M -7.0710678118654755,-7.0710678118654755 h 14.142135623730951 v 14.142135623730951 h -14.142135623730951Z" fill="#D3D3D3"></path> </g> </svg>
+-   Indication of individuals forming a pair: <svg width="50" height="30"> <line x1="5" y1="10" x2="45" y2="10" stroke="orange" stroke-width="3" /> </svg>
+-   Offspring of a married couple: <svg width="50" height="30"> <line x1="5" y1="10" x2="45" y2="10" stroke="red" stroke-width="1" /> </svg>
+
+Use the 'previous'/'next' buttons to browse through the subsequent years of the simulation.
+
+::: {#graf}
+:::
+
+<button id="prev-button">
+
+Previous
+
+</button>
+
+<button id="next-button">
+
+Next
+
+</button>
+
+The first pair (id: 14; 15), which is related, appears in year 51. The first offspring (id: 31) from a related pair (id: 17; 18) is born in year 59. The first person (female, id: 9) dies in year 72.
 
 # Bibliraphy
