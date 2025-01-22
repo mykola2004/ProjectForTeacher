@@ -19,7 +19,7 @@ function loadScript(index) {
 
   script.onload = () => {
     if (window.graphData.nodes && window.graphData.links) {
-      renderGraph("#graf", window.graphData.nodes, window.graphData.links);
+      renderGraph("#graf", window.graphData.year, window.graphData.nodes, window.graphData.links);
     } else {
       console.error("Dane nodes i links nie zostały załadowane!");
     }

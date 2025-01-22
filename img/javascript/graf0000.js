@@ -1,8 +1,9 @@
 window.graphData = {
+  "year": 0,
   "nodes": [
     {
-      "id": "6",
-      "label": "6",
+      "id": "8",
+      "label": "8",
       "type": "sexM",
       "death": false,
       "defect": false

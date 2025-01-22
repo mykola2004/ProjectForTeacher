@@ -1,5 +1,5 @@
 // Funkcja do renderowania grafu
-function renderGraph(svgId, nodes, links) {
+function renderGraph(svgId, year, nodes, links) {
 
   const nodeColor = '#FFE0BD';
   const nodeDefectColor = '#D3D3D3';
@@ -45,6 +45,14 @@ function renderGraph(svgId, nodes, links) {
     .force("link", d3.forceLink(links).id(d => d.id))
     .force("charge", d3.forceManyBody())
     .force("center", d3.forceCenter(width / 2, height / 2));
+
+  svg.append("text")
+    .attr("x", width / 2)
+    .attr("y", 20)
+    .attr("text-anchor", "middle")
+    .attr("font-size", "16px")
+    .attr("font-weight", "bold")
+    .text(`Year: ${year}`);
 
   svg.selectAll("line")
     .data(links)

@@ -1,22 +1,9 @@
 window.graphData = {
+  "year": 25,
   "nodes": [
-    {
-      "id": "9",
-      "label": "9",
-      "type": "sexM",
-      "death": false,
-      "defect": false
-    },
     {
       "id": "6",
       "label": "6",
-      "type": "sexM",
-      "death": false,
-      "defect": false
-    },
-    {
-      "id": "10",
-      "label": "10",
       "type": "sexM",
       "death": false,
       "defect": false
@@ -36,16 +23,16 @@ window.graphData = {
       "defect": false
     },
     {
-      "id": "1",
-      "label": "1",
-      "type": "sexF",
+      "id": "7",
+      "label": "7",
+      "type": "sexM",
       "death": false,
       "defect": false
     },
     {
-      "id": "3",
-      "label": "3",
-      "type": "sexF",
+      "id": "10",
+      "label": "10",
+      "type": "sexM",
       "death": false,
       "defect": false
     },
@@ -57,9 +44,23 @@ window.graphData = {
       "defect": false
     },
     {
-      "id": "7",
-      "label": "7",
+      "id": "9",
+      "label": "9",
       "type": "sexM",
+      "death": false,
+      "defect": false
+    },
+    {
+      "id": "1",
+      "label": "1",
+      "type": "sexF",
+      "death": false,
+      "defect": false
+    },
+    {
+      "id": "3",
+      "label": "3",
+      "type": "sexF",
       "death": false,
       "defect": false
     },
@@ -85,7 +86,7 @@ window.graphData = {
       "defect": false
     },
     {
-      "id": "M3",
+      "id": "M2",
       "label": null,
       "type": "marriage",
       "death": false,
@@ -94,7 +95,7 @@ window.graphData = {
   ],
   "links": [
     {
-      "source": "6",
+      "source": "8",
       "target": "M5"
     },
     {
@@ -102,12 +103,12 @@ window.graphData = {
       "target": "M5"
     },
     {
-      "source": "3",
-      "target": "M3"
+      "source": "10",
+      "target": "M2"
     },
     {
-      "source": "7",
-      "target": "M3"
+      "source": "2",
+      "target": "M2"
     },
     {
       "source": "M5",
